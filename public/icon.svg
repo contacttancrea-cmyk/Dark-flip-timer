@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#16161A"/>
+      <stop offset="100%" stop-color="#09090B"/>
+    </linearGradient>
+    <linearGradient id="topFlap" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#24242B"/>
+      <stop offset="100%" stop-color="#19191F"/>
+    </linearGradient>
+    <linearGradient id="botFlap" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#15151A"/>
+      <stop offset="100%" stop-color="#1E1E24"/>
+    </linearGradient>
+  </defs>
+  <!-- Outer Windows Icon Squircle Housing -->
+  <rect x="8" y="8" width="240" height="240" rx="52" fill="url(#bgGrad)" stroke="#2E2E38" stroke-width="4"/>
+  <!-- Inner Recessed Bezel -->
+  <rect x="24" y="28" width="208" height="200" rx="34" fill="#0B0B0E" stroke="#1E1E26" stroke-width="2"/>
+  <!-- Left Split-Flap Tile -->
+  <rect x="36" y="42" width="86" height="82" rx="14" fill="url(#topFlap)" stroke="#2F2F3B" stroke-width="1.5"/>
+  <rect x="36" y="130" width="86" height="82" rx="14" fill="url(#botFlap)" stroke="#252530" stroke-width="1.5"/>
+  <!-- Right Split-Flap Tile -->
+  <rect x="134" y="42" width="86" height="82" rx="14" fill="url(#topFlap)" stroke="#2F2F3B" stroke-width="1.5"/>
+  <rect x="134" y="130" width="86" height="82" rx="14" fill="url(#botFlap)" stroke="#252530" stroke-width="1.5"/>
+  <!-- Bold White Numerals "25" -->
+  <g fill="#F4F4F6" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, monospace" font-weight="800" font-size="96" text-anchor="middle">
+    <text x="79" y="160">2</text>
+    <text x="177" y="160">5</text>
+  </g>
+  <!-- Center Split Gap & Mechanical Hinges -->
+  <rect x="32" y="123" width="192" height="6" fill="#08080A"/>
+  <rect x="34" y="119" width="6" height="14" rx="2" fill="#525263"/>
+  <rect x="118" y="119" width="6" height="14" rx="2" fill="#525263"/>
+  <rect x="132" y="119" width="6" height="14" rx="2" fill="#525263"/>
+  <rect x="216" y="119" width="6" height="14" rx="2" fill="#525263"/>
+  <!-- Subtle Top Amber Precision Indicator -->
+  <circle cx="128" cy="28" r="4" fill="#F59E0B"/>
+</svg>

@@ -1,0 +1,161 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --font-display: 'Barlow Condensed', system-ui, -apple-system, sans-serif;
+    --font-sans: 'DM Sans', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    background-color: #08080A;
+    color: #F4F4F6;
+    user-select: none;
+    overflow: hidden;
+  }
+}
+
+/*
+ * Authentic 3D Mechanical Split-Flap Physics
+ * Multi-stage keyframes ensure the flap spends the majority of visible frames
+ * sweeping directly across the high-contrast white numerals (-35deg to -90deg
+ * on the upper half, and +90deg to +25deg on the lower half) so both the
+ * folding flap and the underlying digit are simultaneously visible.
+ */
+@keyframes mechanicalFlapFoldTop {
+  0% {
+    transform: perspective(900px) rotateX(0deg);
+  }
+  20% {
+    transform: perspective(900px) rotateX(-38deg);
+  }
+  60% {
+    transform: perspective(900px) rotateX(-66deg);
+  }
+  100% {
+    transform: perspective(900px) rotateX(-90deg);
+  }
+}
+
+@keyframes mechanicalFlapDropBottom {
+  0% {
+    transform: perspective(900px) rotateX(90deg);
+  }
+  38% {
+    transform: perspective(900px) rotateX(56deg);
+  }
+  74% {
+    transform: perspective(900px) rotateX(0deg);
+  }
+  88% {
+    transform: perspective(900px) rotateX(16deg);
+  }
+  100% {
+    transform: perspective(900px) rotateX(0deg);
+  }
+}
+
+/* Shading on the folding upper flap as it tilts downward away from overhead light */
+@keyframes topFlapShade {
+  0% {
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.18;
+  }
+  60% {
+    opacity: 0.45;
+  }
+  100% {
+    opacity: 0.78;
+  }
+}
+
+/* Specular light sweep on the falling bottom flap as it swings from horizontal to vertical */
+@keyframes bottomFlapGlint {
+  0% {
+    opacity: 0.42;
+  }
+  38% {
+    opacity: 0.22;
+  }
+  74% {
+    opacity: 0;
+  }
+  88% {
+    opacity: 0.12;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Subtle shadow on the newly revealed upper card so the new top digit is clearly visible behind the folding flap */
+@keyframes staticTopRevealShadow {
+  0% {
+    opacity: 0.45;
+  }
+  40% {
+    opacity: 0.15;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Progressive drop shadow cast onto the old lower static flap as the new bottom flap falls onto it */
+@keyframes staticBottomCastShadow {
+  0% {
+    opacity: 0;
+  }
+  45% {
+    opacity: 0.18;
+  }
+  75% {
+    opacity: 0.65;
+  }
+  100% {
+    opacity: 0.88;
+  }
+}
+
+.animate-flap-top {
+  transform-origin: 50% 100%;
+  backface-visibility: hidden;
+  will-change: transform;
+  animation: mechanicalFlapFoldTop 320ms linear forwards;
+}
+
+.animate-flap-bottom {
+  transform-origin: 50% 0%;
+  backface-visibility: hidden;
+  will-change: transform;
+  transform: perspective(900px) rotateX(90deg);
+  animation: mechanicalFlapDropBottom 360ms linear 315ms forwards;
+}
+
+.animate-top-flap-shade {
+  animation: topFlapShade 320ms linear forwards;
+}
+
+.animate-bottom-flap-highlight {
+  animation: bottomFlapGlint 360ms linear 315ms forwards;
+}
+
+.animate-static-top-shadow {
+  animation: staticTopRevealShadow 320ms linear forwards;
+}
+
+.animate-static-bottom-shadow {
+  animation: staticBottomCastShadow 620ms linear forwards;
+}
+
+/* Draggable native Electron window titlebar region */
+.app-drag-region {
+  -webkit-app-region: drag;
+}
+
+.app-no-drag {
+  -webkit-app-region: no-drag;
+}
