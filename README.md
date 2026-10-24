@@ -1,14 +1,18 @@
 <div align="center">
 
+<img src="./banner.png" alt="Dark Flip Timer - Time Under Control by TanCreative" width="100%" />
+
+<br /><br />
+
 # ⏱️ Dark Flip Timer
 ### Standalone Dark-Themed Split-Flap Countdown Timer & Acoustic Focus Desktop Application
-**Crafted by TanCreative**
+**Crafted with precision by TanCreative**
 
-[![Release](https://img.shields.io/badge/Release-v1.0.0-amber.svg?style=flat-square)](https://github.com/tancreative/dark-flip-timer/releases)
-[![Platform](https://img.shields.io/badge/Platform-Windows%20x64-blue.svg?style=flat-square)](https://github.com/tancreative/dark-flip-timer/releases)
+[![Release](https://img.shields.io/badge/Release-v1.0.0-amber.svg?style=flat-square)](https://github.com/contacttancrea-cmyk/Dark-flip-timer/releases)
+[![Platform](https://img.shields.io/badge/Platform-Windows%20x64-blue.svg?style=flat-square)](https://github.com/contacttancrea-cmyk/Dark-flip-timer/releases)
 [![License](https://img.shields.io/badge/License-MIT-emerald.svg?style=flat-square)](./LICENSE)
-[![Built by](https://img.shields.io/badge/Author-TanCreative-purple.svg?style=flat-square)](https://github.com/tancreative)
-[![Architecture](https://img.shields.io/badge/Stack-Electron%20%7C%20React%20%7C%20TypeScript%20%7C%20Vite-orange.svg?style=flat-square)](https://github.com/tancreative/dark-flip-timer)
+[![Built by](https://img.shields.io/badge/Author-TanCreative-purple.svg?style=flat-square)](https://github.com/contacttancrea-cmyk)
+[![GitHub Stars](https://img.shields.io/github/stars/contacttancrea-cmyk/Dark-flip-timer?style=flat-square)](https://github.com/contacttancrea-cmyk/Dark-flip-timer/stargazers)
 
 <br />
 
@@ -26,8 +30,8 @@ You **do not** need any coding knowledge, Node.js, or programming tools to use D
 
 | Download Type | Binary File | Description |
 | :--- | :--- | :--- |
-| **Zero-Install (Portable)** | [**Dark-Flip-Timer-1.0.0-Portable.exe**](https://github.com/tancreative/dark-flip-timer/releases/latest) | Standalone executable. Download, double-click, and start immediately without installing anything. Perfect for flash drives or quick use. |
-| **Windows Setup Installer** | [**Dark-Flip-Timer-1.0.0-nsis.exe**](https://github.com/tancreative/dark-flip-timer/releases/latest) | Standard Windows setup installer. Adds **Dark Flip Timer** to your Desktop and Windows Start Menu. |
+| **Zero-Install (Portable)** | [**Dark-Flip-Timer-1.0.0-Portable.exe**](https://github.com/contacttancrea-cmyk/Dark-flip-timer/releases/latest) | Standalone executable. Download, double-click, and start immediately without installing anything. Perfect for flash drives or quick use. |
+| **Windows Setup Installer** | [**Dark-Flip-Timer-1.0.0-nsis.exe**](https://github.com/contacttancrea-cmyk/Dark-flip-timer/releases/latest) | Standard Windows setup installer. Adds **Dark Flip Timer** to your Desktop and Windows Start Menu. |
 
 ---
 
@@ -88,7 +92,7 @@ If you are a developer and wish to customize or build the software from source:
 ### Installation & Development
 ```bash
 # Clone the repository
-git clone https://github.com/tancreative/dark-flip-timer.git
+git clone https://github.com/contacttancrea-cmyk/Dark-flip-timer.git
 cd dark-flip-timer
 
 # Install dependencies

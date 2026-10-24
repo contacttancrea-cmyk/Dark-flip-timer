@@ -5,6 +5,14 @@
   "author": "TanCreative",
   "license": "MIT",
   "private": false,
+  "homepage": "https://github.com/contacttancrea-cmyk/Dark-flip-timer#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/contacttancrea-cmyk/Dark-flip-timer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/contacttancrea-cmyk/Dark-flip-timer/issues"
+  },
   "version": "1.0.0",
   "type": "module",
   "main": "electron/main.cjs",
