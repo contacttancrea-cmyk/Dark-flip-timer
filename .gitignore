@@ -5,5 +5,7 @@ release/
 coverage/
 .DS_Store
 *.log
+*.mp4
+*.webm
 .env*
 !.env.example

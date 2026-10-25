@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dark Flip Timer — Official Product Launch Motion Graphics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800;900&family=DM+Sans:wght@400;500;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #08080A;
+      --card-bg: #121217;
+      --accent: #F59E0B;
+      --accent-glow: rgba(245, 158, 11, 0.45);
+      --zinc-100: #F4F4F6;
+      --zinc-400: #A1A1AA;
+      --zinc-500: #71717A;
+      --font-display: 'Barlow Condensed', sans-serif;
+      --font-sans: 'DM Sans', sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+    }
+
+    body {
+      background-color: #030305;
+      color: var(--zinc-100);
+      font-family: var(--font-sans);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding: 20px;
+    }
+
+    /* Video Frame Container 16:9 Cinema Aspect Ratio */
+    .cinema-viewport {
+      position: relative;
+      width: 1280px;
+      height: 720px;
+      max-width: 95vw;
+      max-height: calc(95vw * 9 / 16);
+      background-color: var(--bg);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 30px 100px rgba(0, 0, 0, 0.9), 0 0 80px rgba(245, 158, 11, 0.12);
+      border: 1px solid #1E1E28;
+    }
+
+    @media (min-width: 1600px) {
+      .cinema-viewport {
+        width: 1440px;
+        height: 810px;
+        max-width: 95vw;
+        max-height: calc(95vw * 9 / 16);
+      }
+    }
+
+    /* Canvas Ambient Lighting & Particle Wave Engine */
+    #ambientCanvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* Cinematic Scene Stage */
+    .scene-stage {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+      opacity: 0;
+      transform: scale(0.96);
+      transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+    }
+
+    .scene-stage.active {
+      opacity: 1;
+      transform: scale(1);
+      pointer-events: auto;
+    }
+
+    /* Kinetic Typography Elements */
+    .tag-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      color: #FCD34D;
+      margin-bottom: 24px;
+      box-shadow: 0 0 24px rgba(245, 158, 11, 0.2);
+    }
+
+    .headline-huge {
+      font-size: clamp(38px, 5.2vw, 76px);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.05;
+      text-align: center;
+      background: linear-gradient(180deg, #FFFFFF 0%, #D4D4D8 60%, #A1A1AA 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 18px;
+      max-width: 900px;
+    }
+
+    .headline-amber {
+      background: linear-gradient(180deg, #FDE68A 0%, #F59E0B 65%, #B45309 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .sub-caption {
+      font-size: clamp(16px, 1.8vw, 22px);
+      color: var(--zinc-400);
+      text-align: center;
+      max-width: 680px;
+      line-height: 1.5;
+      font-weight: 400;
+    }
+
+    /* 3D Mockup Box for Scene 2 & 3 */
+    .mockup-3d-wrap {
+      perspective: 1200px;
+      transform-style: preserve-3d;
+      margin-top: 24px;
+    }
+
+    .mockup-window {
+      background: #0B0B0F;
+      border: 1px solid #242432;
+      border-radius: 16px;
+      box-shadow: 0 40px 100px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      padding: 24px 36px;
+      transform: rotateX(8deg) rotateY(-4deg) rotateZ(0.5deg);
+      transition: transform 0.6s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    /* Animated 3D Split-Flap Clock Demonstration */
+    .flip-clock-demo {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .flap-card {
+      position: relative;
+      width: 140px;
+      height: 140px;
+      background: #15151C;
+      border-radius: 12px;
+      border: 1px solid #282836;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      perspective: 800px;
+      overflow: hidden;
+    }
+
+    .flap-card::after {
+      content: '';
+      position: absolute;
+      inset-x: 0;
+      top: 50%;
+      height: 2px;
+      background: #08080A;
+      z-index: 10;
+    }
+
+    .flap-digit {
+      font-family: var(--font-display);
+      font-size: 110px;
+      font-weight: 800;
+      color: #F4F4F6;
+      line-height: 1;
+      tabular-nums: true;
+    }
+
+    .flap-colon {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .flap-colon span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+
+    /* Floating Feature Badges Grid (Scene 4 & 5) */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+      margin-top: 36px;
+      width: 85%;
+      max-width: 920px;
+    }
+
+    .glass-pill {
+      background: rgba(18, 18, 24, 0.7);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 18px 22px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      transition: all 0.3s ease;
+    }
+
+    .glass-pill-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: #FCD34D;
+      shrink: 0;
+    }
+
+    .glass-pill-text h4 {
+      font-size: 15px;
+      font-weight: 700;
+      color: #F4F4F6;
+      margin-bottom: 3px;
+    }
+
+    .glass-pill-text p {
+      font-size: 12px;
+      color: #A1A1AA;
+    }
+
+    /* Windows Notification Toast Mockup (Scene 5) */
+    .toast-mockup {
+      position: absolute;
+      top: 30px;
+      right: 36px;
+      width: 360px;
+      background: rgba(20, 20, 28, 0.94);
+      backdrop-filter: blur(20px);
+      border: 1px solid #323244;
+      border-radius: 14px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.8), 0 0 30px rgba(245, 158, 11, 0.15);
+      transform: translateX(120%);
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 20;
+    }
+
+    .toast-mockup.show {
+      transform: translateX(0);
+    }
+
+    /* Call to Action Scene */
+    .cta-buttons {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 32px;
+    }
+
+    .cta-btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: #F4F4F6;
+      color: #08080A;
+      padding: 14px 30px;
+      border-radius: 12px;
+      font-weight: 800;
+      font-size: 16px;
+      text-decoration: none;
+      box-shadow: 0 10px 30px rgba(255, 255, 255, 0.2);
+    }
+
+    .cta-btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: #171720;
+      color: #F4F4F6;
+      padding: 14px 26px;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 15px;
+      border: 1px solid #2B2B3A;
+      text-decoration: none;
+    }
+
+    /* Video Player Controls Bar Below Screen */
+    .controls-panel {
+      width: 1280px;
+      max-width: 95vw;
+      margin-top: 18px;
+      background: #0E0E14;
+      border: 1px solid #22222E;
+      border-radius: 14px;
+      padding: 14px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .timeline-track {
+      flex: 1;
+      height: 6px;
+      background: #1F1F2C;
+      border-radius: 999px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .timeline-progress {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 999px;
+      width: 0%;
+      box-shadow: 0 0 12px var(--accent);
+    }
+
+    .ctrl-btn {
+      background: #1A1A24;
+      color: #F4F4F6;
+      border: 1px solid #2C2C3C;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .ctrl-btn:hover {
+      background: #252534;
+      border-color: #3E3E52;
+    }
+
+    .ctrl-btn-export {
+      background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+      color: #08080A;
+      font-weight: 800;
+      border: none;
+      box-shadow: 0 4px 16px rgba(245, 158, 11, 0.35);
+    }
+
+    .ctrl-btn-export:hover {
+      background: linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%);
+      box-shadow: 0 6px 20px rgba(245, 158, 11, 0.5);
+    }
+
+    .timecode {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--zinc-400);
+      min-width: 90px;
+    }
+
+    /* Scene specific styles */
+    .logo-reveal {
+      width: 80px;
+      height: 80px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 40px rgba(245, 158, 11, 0.35);
+    }
+
+    .soundwave-bars {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      height: 40px;
+      margin-top: 24px;
+    }
+
+    .soundwave-bar {
+      width: 4px;
+      background: var(--accent);
+      border-radius: 999px;
+      animation: pulseBar 1.2s infinite ease-in-out;
+    }
+
+    @keyframes pulseBar {
+      0%, 100% { height: 8px; opacity: 0.3; }
+      50% { height: 38px; opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Cinematic 16:9 Presentation Viewport -->
+  <div class="cinema-viewport" id="viewport">
+    <canvas id="ambientCanvas"></canvas>
+
+    <!-- Floating Native Toast Notification (Appears dynamically in Scene 5) -->
+    <div class="toast-mockup" id="toastMockup">
+      <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(245, 158, 11, 0.2); border: 1px solid rgba(245, 158, 11, 0.4); display: flex; align-items: center; justify-content: center; font-size: 18px;">
+        🔔
+      </div>
+      <div>
+        <div style="font-size: 13px; font-weight: 700; color: #F4F4F6;">Countdown Finished · 00:00:00</div>
+        <div style="font-size: 11px; color: #A1A1AA; margin-top: 2px;">Your 25:00 focus sprint has completed.</div>
+      </div>
+    </div>
+
+    <!-- SCENE 1: The Problem / Hook (00:00 - 00:08) -->
+    <div class="scene-stage" id="scene1">
+      <div class="tag-badge">TanCreative Presents</div>
+      <h1 class="headline-huge">Time Is Your Greatest Asset.<br/><span class="headline-amber">Focus Is Under Attack.</span></h1>
+      <p class="sub-caption">In a world of perpetual notifications and noisy distractions, deep cognitive work demands silence and mechanical discipline.</p>
+    </div>
+
+    <!-- SCENE 2: The Hero Reveal (00:08 - 00:18) -->
+    <div class="scene-stage" id="scene2">
+      <img src="../public/icon.svg" alt="Dark Flip Timer" class="logo-reveal" />
+      <div class="tag-badge">Introducing Dark Flip Timer</div>
+      <h1 class="headline-huge">Vintage Mechanical Craft.<br/><span class="headline-amber">Zero Digital Noise.</span></h1>
+      <p class="sub-caption">A dedicated Windows desktop focus sanctuary inspired by Dieter Rams' timeless design principles.</p>
+    </div>
+
+    <!-- SCENE 3: Split-Flap Physics Demonstration (00:18 - 00:30) -->
+    <div class="scene-stage" id="scene3">
+      <div class="tag-badge">Split-Flap Mechanics</div>
+      <h2 class="headline-huge" style="font-size: 48px;">Physics-Based 3D Flip Engine</h2>
+      <div class="mockup-3d-wrap">
+        <div class="mockup-window">
+          <div class="flip-clock-demo">
+            <div class="flap-card"><span class="flap-digit" id="demoHours">00</span></div>
+            <div class="flap-colon"><span></span><span></span></div>
+            <div class="flap-card"><span class="flap-digit" id="demoMinutes">24</span></div>
+            <div class="flap-colon"><span></span><span></span></div>
+            <div class="flap-card"><span class="flap-digit" id="demoSeconds">59</span></div>
+          </div>
+          <div style="font-family: var(--font-mono); font-size: 13px; color: #71717A;">
+            WALL-CLOCK HARDWARE DRIFT-FREE SYNCHRONIZATION
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCENE 4: Acoustic Noise Masking (00:30 - 00:42) -->
+    <div class="scene-stage" id="scene4">
+      <div class="tag-badge">Acoustic Sound Masking</div>
+      <h2 class="headline-huge">Silence The World Around You.</h2>
+      <p class="sub-caption">Real recorded natural rain, organic water drops, and studio-synthesized Brown Noise to block out ambient distractions completely.</p>
+      
+      <div class="soundwave-bars" id="soundwaveContainer"></div>
+    </div>
+
+    <!-- SCENE 5: Dual Mode & Smart Alerts (00:42 - 00:54) -->
+    <div class="scene-stage" id="scene5">
+      <div class="tag-badge">Dual Mode & Notifications</div>
+      <h2 class="headline-huge">Countdown Timer & <span class="headline-amber">Stopwatch</span></h2>
+      <p class="sub-caption">Seamless 1-click mode switching, split-lap recording, target milestone duration alerts, and Windows desktop notifications.</p>
+
+      <div class="feature-grid">
+        <div class="glass-pill">
+          <div class="glass-pill-icon">⏱️</div>
+          <div class="glass-pill-text">
+            <h4>Dual Engine</h4>
+            <p>Timer & Count-up Stopwatch</p>
+          </div>
+        </div>
+        <div class="glass-pill">
+          <div class="glass-pill-icon">🚩</div>
+          <div class="glass-pill-text">
+            <h4>Lap Recording</h4>
+            <p>Drift-free split lap drawer</p>
+          </div>
+        </div>
+        <div class="glass-pill">
+          <div class="glass-pill-icon">🔔</div>
+          <div class="glass-pill-text">
+            <h4>Smart Alerts</h4>
+            <p>Windows Toast & Taskbar Flash</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCENE 6: Feature Wall (00:54 - 01:02) -->
+    <div class="scene-stage" id="scene6">
+      <div class="tag-badge">Built For Uncompromised Work</div>
+      <h2 class="headline-huge">Engineered For Perfection.</h2>
+      
+      <div class="feature-grid">
+        <div class="glass-pill">
+          <div class="glass-pill-icon">🛡️</div>
+          <div class="glass-pill-text">
+            <h4>100% Offline</h4>
+            <p>Zero telemetry, total privacy</p>
+          </div>
+        </div>
+        <div class="glass-pill">
+          <div class="glass-pill-icon">⚡</div>
+          <div class="glass-pill-text">
+            <h4>GPU Accelerated</h4>
+            <p>Smooth 60/120 FPS rendering</p>
+          </div>
+        </div>
+        <div class="glass-pill">
+          <div class="glass-pill-icon">📌</div>
+          <div class="glass-pill-text">
+            <h4>Always-On-Top</h4>
+            <p>Pin above code & editors</p>
+          </div>
+        </div>
+        <div class="glass-pill">
+          <div class="glass-pill-icon">🌧️</div>
+          <div class="glass-pill-text">
+            <h4>Organic Rain</h4>
+            <p>Natural acoustic focus audio</p>
+          </div>
+        </div>
+        <div class="glass-pill">
+          <div class="glass-pill-icon">⌨️</div>
+          <div class="glass-pill-text">
+            <h4>Keyboard Driven</h4>
+            <p>Space, T, S, L, R, C, F11</p>
+          </div>
+        </div>
+        <div class="glass-pill">
+          <div class="glass-pill-icon">📦</div>
+          <div class="glass-pill-text">
+            <h4>Zero-Install</h4>
+            <p>Standalone Portable .exe</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCENE 7: Outro & Call to Action (01:02 - 01:12) -->
+    <div class="scene-stage" id="scene7">
+      <img src="../public/icon.svg" alt="Dark Flip Timer" class="logo-reveal" style="width: 90px; height: 90px;" />
+      <h1 class="headline-huge">Dark Flip Timer</h1>
+      <p class="sub-caption">Time Under Control. Crafted with precision by <strong>TanCreative</strong>.</p>
+      
+      <div class="cta-buttons">
+        <a href="https://github.com/contacttancrea-cmyk/Dark-flip-timer/releases/latest" target="_blank" class="cta-btn-primary">
+          <span>Download for Windows (.exe)</span>
+          <span>→</span>
+        </a>
+        <a href="https://github.com/contacttancrea-cmyk/Dark-flip-timer" target="_blank" class="cta-btn-secondary">
+          <span>View on GitHub</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Player Controls Bar -->
+  <div class="controls-panel">
+    <button class="ctrl-btn" id="playBtn">▶ Play</button>
+    <div class="timecode" id="timecodeDisplay">00:00 / 01:10</div>
+    <div class="timeline-track" id="timelineTrack">
+      <div class="timeline-progress" id="timelineProgress"></div>
+    </div>
+    <button class="ctrl-btn" id="musicToggleBtn">🔊 Audio: On</button>
+    <button class="ctrl-btn ctrl-btn-export" id="exportBtn">🎥 Record & Export Video</button>
+  </div>
+
+  <script>
+    // Audio Synthesizer Engine for Cinematic Product Launch Beat & SFX
+    class LaunchSoundtrack {
+      constructor() {
+        this.ctx = null;
+        this.isPlaying = false;
+        this.bassGain = null;
+        this.rainAudio = new Audio('../public/audio/rain.mp3');
+        this.rainAudio.loop = true;
+      }
+
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioContext();
+        }
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      }
+
+      playMechanicalTick() {
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(160, now);
+        osc.frequency.exponentialRampToValueAtTime(45, now + 0.03);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.03);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.035);
+      }
+
+      playDeepWhoosh() {
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(80, now);
+        osc.frequency.exponentialRampToValueAtTime(35, now + 0.6);
+        gain.gain.setValueAtTime(0.3, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.65);
+      }
+
+      playChime() {
+        if (!this.ctx) return;
+        const now = this.ctx.currentTime;
+        [523.25, 659.25, 783.99].forEach((freq, idx) => {
+          const osc = this.ctx.createOscillator();
+          const gain = this.ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, now + idx * 0.1);
+          gain.gain.setValueAtTime(0.001, now + idx * 0.1);
+          gain.gain.linearRampToValueAtTime(0.15, now + idx * 0.1 + 0.02);
+          gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.1 + 0.8);
+          osc.connect(gain);
+          gain.connect(this.ctx.destination);
+          osc.start(now + idx * 0.1);
+          osc.stop(now + idx * 0.1 + 0.85);
+        });
+      }
+
+      startRain() {
+        this.rainAudio.volume = 0.25;
+        this.rainAudio.play().catch(() => {});
+      }
+
+      stopRain() {
+        this.rainAudio.pause();
+      }
+    }
+
+    const soundtrack = new LaunchSoundtrack();
+
+    // Canvas Ambient Background & Particle Wave Renderer
+    const canvas = document.getElementById('ambientCanvas');
+    const ctx = canvas.getContext('2d');
+    let width, height;
+
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * window.devicePixelRatio;
+      canvas.height = rect.height * window.devicePixelRatio;
+      width = canvas.width;
+      height = canvas.height;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    let wavePhase = 0;
+    function renderAmbient() {
+      ctx.clearRect(0, 0, width, height);
+
+      // Deep dark mesh gradient
+      const grad = ctx.createRadialGradient(
+        width * 0.5, height * 0.4, 40,
+        width * 0.5, height * 0.5, width * 0.7
+      );
+      grad.addColorStop(0, 'rgba(245, 158, 11, 0.07)');
+      grad.addColorStop(0.5, 'rgba(20, 16, 26, 0.4)');
+      grad.addColorStop(1, 'rgba(8, 8, 10, 0.95)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, width, height);
+
+      // Floating particle wave at bottom
+      wavePhase += 0.015;
+      const points = 45;
+      ctx.beginPath();
+      ctx.strokeStyle = 'rgba(245, 158, 11, 0.18)';
+      ctx.lineWidth = 1.5;
+
+      for (let i = 0; i <= points; i++) {
+        const x = (i / points) * width;
+        const y = height * 0.88 + Math.sin(i * 0.35 + wavePhase) * 18 + Math.cos(i * 0.2 - wavePhase * 0.8) * 10;
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+
+      requestAnimationFrame(renderAmbient);
+    }
+    renderAmbient();
+
+    // Soundwave bars in Scene 4
+    const soundwaveContainer = document.getElementById('soundwaveContainer');
+    for (let i = 0; i < 28; i++) {
+      const bar = document.createElement('div');
+      bar.className = 'soundwave-bar';
+      bar.style.animationDelay = `${(i * 0.07).toFixed(2)}s`;
+      soundwaveContainer.appendChild(bar);
+    }
+
+    // Storyboard Scene Timing Definitions (Total Duration: 70 seconds)
+    const SCENES = [
+      { id: 'scene1', start: 0, end: 8 },
+      { id: 'scene2', start: 8, end: 18 },
+      { id: 'scene3', start: 18, end: 30 },
+      { id: 'scene4', start: 30, end: 42 },
+      { id: 'scene5', start: 42, end: 54 },
+      { id: 'scene6', start: 54, end: 62 },
+      { id: 'scene7', start: 62, end: 70 },
+    ];
+
+    const TOTAL_DURATION = 70;
+    let currentTime = 0;
+    let isPlaying = false;
+    let playTimer = null;
+    let soundEnabled = true;
+
+    const playBtn = document.getElementById('playBtn');
+    const timecodeDisplay = document.getElementById('timecodeDisplay');
+    const timelineProgress = document.getElementById('timelineProgress');
+    const timelineTrack = document.getElementById('timelineTrack');
+    const toastMockup = document.getElementById('toastMockup');
+    const demoSeconds = document.getElementById('demoSeconds');
+
+    function formatTime(sec) {
+      const m = Math.floor(sec / 60).toString().padStart(2, '0');
+      const s = Math.floor(sec % 60).toString().padStart(2, '0');
+      return `${m}:${s}`;
+    }
+
+    let lastSec = -1;
+    function updatePlayback() {
+      timecodeDisplay.textContent = `${formatTime(currentTime)} / ${formatTime(TOTAL_DURATION)}`;
+      timelineProgress.style.width = `${(currentTime / TOTAL_DURATION) * 100}%`;
+
+      // Update active scenes
+      SCENES.forEach((scene) => {
+        const el = document.getElementById(scene.id);
+        if (currentTime >= scene.start && currentTime < scene.end) {
+          if (!el.classList.contains('active')) {
+            el.classList.add('active');
+            if (soundEnabled) soundtrack.playDeepWhoosh();
+          }
+        } else {
+          el.classList.remove('active');
+        }
+      });
+
+      // Special Scene triggers
+      // Scene 3: Split-flap second counter
+      if (currentTime >= 18 && currentTime < 30) {
+        const remaining = Math.max(0, 59 - Math.floor(currentTime - 18));
+        const formatted = remaining.toString().padStart(2, '0');
+        if (demoSeconds.textContent !== formatted) {
+          demoSeconds.textContent = formatted;
+          if (soundEnabled) soundtrack.playMechanicalTick();
+        }
+      }
+
+      // Scene 4: Rain sound
+      if (currentTime >= 30 && currentTime < 42) {
+        if (soundEnabled) soundtrack.startRain();
+      } else {
+        soundtrack.stopRain();
+      }
+
+      // Scene 5: Toast notification popup
+      if (currentTime >= 45 && currentTime < 54) {
+        if (!toastMockup.classList.contains('show')) {
+          toastMockup.classList.add('show');
+          if (soundEnabled) soundtrack.playChime();
+        }
+      } else {
+        toastMockup.classList.remove('show');
+      }
+
+      // Scene 7: Chime
+      if (currentTime >= 62 && lastSec < 62) {
+        if (soundEnabled) soundtrack.playChime();
+      }
+      lastSec = currentTime;
+
+      if (currentTime >= TOTAL_DURATION) {
+        pause();
+        currentTime = 0;
+        updatePlayback();
+      }
+    }
+
+    function play() {
+      soundtrack.init();
+      isPlaying = true;
+      playBtn.textContent = '❚❚ Pause';
+      const step = 0.05;
+      playTimer = setInterval(() => {
+        currentTime = Math.min(TOTAL_DURATION, currentTime + step);
+        updatePlayback();
+      }, step * 1000);
+    }
+
+    function pause() {
+      isPlaying = false;
+      playBtn.textContent = '▶ Play';
+      if (playTimer) {
+        clearInterval(playTimer);
+        playTimer = null;
+      }
+      soundtrack.stopRain();
+    }
+
+    playBtn.addEventListener('click', () => {
+      if (isPlaying) pause();
+      else play();
+    });
+
+    timelineTrack.addEventListener('click', (e) => {
+      const rect = timelineTrack.getBoundingClientRect();
+      const pos = (e.clientX - rect.left) / rect.width;
+      currentTime = Math.max(0, Math.min(TOTAL_DURATION, pos * TOTAL_DURATION));
+      updatePlayback();
+    });
+
+    document.getElementById('musicToggleBtn').addEventListener('click', function() {
+      soundEnabled = !soundEnabled;
+      this.textContent = soundEnabled ? '🔊 Audio: On' : '🔇 Audio: Muted';
+      if (!soundEnabled) soundtrack.stopRain();
+    });
+
+    // High-Resolution 60 FPS Video Recorder & Downloader
+    const exportBtn = document.getElementById('exportBtn');
+    let mediaRecorder = null;
+    let recordedChunks = [];
+
+    exportBtn.addEventListener('click', async () => {
+      if (exportBtn.dataset.recording === 'true') {
+        if (mediaRecorder) mediaRecorder.stop();
+        return;
+      }
+
+      alert('Recording is starting! The 70-second launch sequence will play from 00:00 and automatically export a high-definition video when completed.');
+
+      currentTime = 0;
+      updatePlayback();
+      soundtrack.init();
+
+      const viewport = document.getElementById('viewport');
+      
+      // Capture canvas stream at 60 FPS
+      const stream = canvas.captureStream(60);
+
+      try {
+        mediaRecorder = new MediaRecorder(stream, {
+          mimeType: 'video/webm;codecs=vp9',
+          videoBitsPerSecond: 8000000 // 8 Mbps high quality
+        });
+      } catch (e) {
+        mediaRecorder = new MediaRecorder(stream);
+      }
+
+      recordedChunks = [];
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data.size > 0) recordedChunks.push(e.data);
+      };
+
+      mediaRecorder.onstop = () => {
+        const blob = new Blob(recordedChunks, { type: 'video/webm' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'Dark-Flip-Timer-Product-Launch-Video.webm';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+
+        exportBtn.dataset.recording = 'false';
+        exportBtn.textContent = '🎥 Record & Export Video';
+      };
+
+      mediaRecorder.start();
+      exportBtn.dataset.recording = 'true';
+      exportBtn.textContent = '⏹ Stop & Save Video';
+
+      play();
+    });
+
+    // Initialize first frame
+    updatePlayback();
+  </script>
+</body>
+</html>
