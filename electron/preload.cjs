@@ -12,6 +12,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   closeWindow: () => ipcRenderer.invoke('window:close'),
   setTimerRunningState: (isRunning) => ipcRenderer.invoke('timer:set-running-state', isRunning),
   notifyTimerCompleted: (payload) => ipcRenderer.invoke('timer:notify-completed', payload),
+  sendNotification: (payload) => ipcRenderer.invoke('notification:send', payload),
+  openExternal: (url) => ipcRenderer.invoke('shell:open-external', url),
   onFullscreenChanged: (callback) => {
     const listener = (_event, isFullscreen) => callback(isFullscreen);
     ipcRenderer.on('window:fullscreen-changed', listener);

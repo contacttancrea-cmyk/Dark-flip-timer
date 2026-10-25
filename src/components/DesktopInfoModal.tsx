@@ -24,13 +24,17 @@ export const DesktopInfoModal: React.FC<DesktopInfoModalProps> = ({
   };
 
   const shortcuts = [
-    { key: 'Space', action: 'Start, pause, or resume countdown' },
-    { key: 'R', action: 'Reset timer to selected preset or custom time' },
+    { key: 'Space', action: 'Start, pause, or resume countdown / stopwatch' },
+    { key: 'T', action: 'Switch to Countdown Timer mode' },
+    { key: 'S', action: 'Switch to Stopwatch count-up mode' },
+    { key: 'L', action: 'Record lap split time (in Stopwatch mode)' },
+    { key: 'R', action: 'Reset timer or stopwatch to initial state' },
+    { key: 'N', action: 'Open Notification Center & System Alerts' },
     { key: 'C', action: 'Toggle background concentration sound / noise masking' },
     { key: 'F / F11', action: 'Toggle fullscreen mode' },
-    { key: 'Esc', action: 'Exit fullscreen mode or close dialog' },
+    { key: 'Esc', action: 'Exit fullscreen mode or close open dialog' },
     { key: 'M', action: 'Toggle completion alarm & mechanical tick sound' },
-    { key: '1 – 8', action: 'Select quick preset (1, 5, 10, 15, 25, 30, 45, 60 min)' },
+    { key: '1 – 8', action: 'Select quick timer preset (1, 5, 10, 15, 25, 30, 45, 60 min)' },
     { key: 'Click Digit', action: 'Edit hours, minutes, or seconds directly when stopped' },
   ];
 

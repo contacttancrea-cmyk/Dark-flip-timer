@@ -1,5 +1,15 @@
 export type TimerStatus = 'idle' | 'running' | 'paused' | 'completed';
 
+export type AppMode = 'timer' | 'stopwatch';
+
+export interface StopwatchLap {
+  id: number;
+  lapTimeSeconds: number;
+  totalTimeSeconds: number;
+  formattedLap: string;
+  formattedTotal: string;
+}
+
 export type TimeUnitKey = 'hours' | 'minutes' | 'seconds';
 
 export interface TimeParts {
@@ -143,4 +153,24 @@ export function calculateProgressPercent(
   if (initialDurationSeconds <= 0) return 0;
   const elapsed = Math.max(0, initialDurationSeconds - remainingSeconds);
   return Math.min(100, Math.max(0, (elapsed / initialDurationSeconds) * 100));
+}
+
+/**
+ * Drift-free Stopwatch count-up calculation based on hardware wall-clock timestamp.
+ */
+export function calculateStopwatchElapsed(
+  startTimeMs: number,
+  accumulatedMs: number,
+  nowMs: number
+): {
+  elapsedMs: number;
+  elapsedSeconds: number;
+} {
+  const currentRunMs = Math.max(0, nowMs - startTimeMs);
+  const totalMs = accumulatedMs + currentRunMs;
+  const elapsedSeconds = Math.floor(totalMs / 1000);
+  return {
+    elapsedMs: totalMs,
+    elapsedSeconds: Math.min(MAX_HOURS * 3600 + 3599, elapsedSeconds),
+  };
 }

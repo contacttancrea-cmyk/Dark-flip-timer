@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, Notification, powerSaveBlocker } = require('electron');
+const { app, BrowserWindow, ipcMain, Notification, powerSaveBlocker, shell } = require('electron');
 const path = require('node:path');
 
 let mainWindow = null;
@@ -142,6 +142,30 @@ ipcMain.handle('timer:notify-completed', (_event, payload) => {
       body: payload?.body || 'Countdown reached 00:00:00.',
       icon: path.join(__dirname, '../build/icon.ico'),
       silent: false,
+    });
+    notification.show();
+  }
+  if (mainWindow && !mainWindow.isFocused()) {
+    mainWindow.flashFrame(true);
+  }
+  return true;
+});
+
+ipcMain.handle('shell:open-external', async (_event, url) => {
+  if (url && (url.startsWith('https://') || url.startsWith('http://'))) {
+    await shell.openExternal(url);
+    return true;
+  }
+  return false;
+});
+
+ipcMain.handle('notification:send', (_event, payload) => {
+  if (Notification.isSupported()) {
+    const notification = new Notification({
+      title: payload?.title || 'Dark Flip Timer',
+      body: payload?.body || '',
+      icon: path.join(__dirname, '../build/icon.ico'),
+      silent: Boolean(payload?.silent),
     });
     notification.show();
   }

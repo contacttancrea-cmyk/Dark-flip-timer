@@ -10,6 +10,8 @@ export interface ElectronDesktopAPI {
   closeWindow: () => Promise<void>;
   setTimerRunningState: (isRunning: boolean) => Promise<boolean>;
   notifyTimerCompleted: (payload: { title: string; body: string }) => Promise<boolean>;
+  sendNotification?: (payload: { title: string; body: string; silent?: boolean }) => Promise<boolean>;
+  openExternal?: (url: string) => Promise<boolean>;
   onFullscreenChanged: (callback: (isFullscreen: boolean) => void) => () => void;
 }
 
@@ -69,5 +71,46 @@ export function triggerCompletionNotification(title: string, body: string): void
     } catch {
       // Ignore notification errors in restricted environments
     }
+  }
+}
+
+export function sendDesktopNotification(title: string, body: string, silent: boolean = false): void {
+  if (typeof window === 'undefined') return;
+
+  if (window.electronAPI?.sendNotification) {
+    window.electronAPI.sendNotification({ title, body, silent }).catch(() => {});
+    return;
+  }
+
+  if (window.electronAPI?.notifyTimerCompleted) {
+    window.electronAPI.notifyTimerCompleted({ title, body }).catch(() => {});
+    return;
+  }
+
+  if ('Notification' in window && Notification.permission === 'granted') {
+    try {
+      new Notification(title, { body, icon: './icon.png', silent });
+    } catch {
+      // Ignore
+    }
+  }
+}
+
+export async function openExternalUrl(url: string): Promise<boolean> {
+  if (typeof window === 'undefined') return false;
+
+  if (window.electronAPI?.openExternal) {
+    try {
+      return await window.electronAPI.openExternal(url);
+    } catch {
+      // Fallback below
+    }
+  }
+
+  try {
+    window.open(url, '_blank', 'noopener,noreferrer');
+    return true;
+  } catch {
+    return false;
   }
 }

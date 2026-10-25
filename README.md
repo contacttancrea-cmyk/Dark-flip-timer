@@ -8,7 +8,7 @@
 ### Standalone Dark-Themed Split-Flap Countdown Timer & Acoustic Focus Desktop Application
 **Crafted with precision by TanCreative**
 
-[![Release](https://img.shields.io/badge/Release-v1.0.0-amber.svg?style=flat-square)](https://github.com/contacttancrea-cmyk/Dark-flip-timer/releases)
+[![Release](https://img.shields.io/badge/Release-v1.1.0-amber.svg?style=flat-square)](https://github.com/contacttancrea-cmyk/Dark-flip-timer/releases)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20x64-blue.svg?style=flat-square)](https://github.com/contacttancrea-cmyk/Dark-flip-timer/releases)
 [![License](https://img.shields.io/badge/License-MIT-emerald.svg?style=flat-square)](./LICENSE)
 [![Built by](https://img.shields.io/badge/Author-TanCreative-purple.svg?style=flat-square)](https://github.com/contacttancrea-cmyk)
@@ -17,7 +17,7 @@
 <br />
 
 <p align="center">
-  A distraction-free, precision desktop countdown timer built for developers, designers, and deep thinkers. Combining vintage mechanical split-flap physics with genuine acoustic sound masking to effortlessly block outside noise and maintain unbroken focus.
+  A distraction-free, precision desktop countdown timer & stopwatch built for developers, designers, and deep thinkers. Combining vintage mechanical split-flap physics with genuine acoustic sound masking, intelligent notifications, and automatic update delivery to maintain unbroken focus.
 </p>
 
 </div>
@@ -30,38 +30,48 @@ You **do not** need any coding knowledge, Node.js, or programming tools to use D
 
 | Download Type | Binary File | Description |
 | :--- | :--- | :--- |
-| **Zero-Install (Portable)** | [**Dark-Flip-Timer-1.0.0-Portable.exe**](https://github.com/contacttancrea-cmyk/Dark-flip-timer/releases/latest) | Standalone executable. Download, double-click, and start immediately without installing anything. Perfect for flash drives or quick use. |
-| **Windows Setup Installer** | [**Dark-Flip-Timer-1.0.0-nsis.exe**](https://github.com/contacttancrea-cmyk/Dark-flip-timer/releases/latest) | Standard Windows setup installer. Adds **Dark Flip Timer** to your Desktop and Windows Start Menu. |
+| **Zero-Install (Portable)** | [**Dark-Flip-Timer-1.1.0-Portable.exe**](https://github.com/contacttancrea-cmyk/Dark-flip-timer/releases/latest) | Standalone executable. Download, double-click, and start immediately without installing anything. Perfect for flash drives or quick use. |
+| **Windows Setup Installer** | [**Dark-Flip-Timer-1.1.0-nsis.exe**](https://github.com/contacttancrea-cmyk/Dark-flip-timer/releases/latest) | Standard Windows setup installer. Adds **Dark Flip Timer** to your Desktop and Windows Start Menu. |
 
 ---
 
 ## ✨ Key Features
 
-### 1. 🎴 Vintage Split-Flap Mechanical Aesthetics
+### 1. ⏱️ Dual Mode: Precision Countdown Timer & Stopwatch
+- **Countdown Mode:** Set custom time or select one-click presets (1m, 5m, 10m, 15m, 25m Pomodoro, 30m, 45m, 60m).
+- **Stopwatch Count-Up Mode:** Real-time drift-free stopwatch with Split / Lap timing (<kbd>L</kbd>) and optional Target Alert intervals (15m, 25m, 30m, 45m, 60m).
+- **1-Click Switching:** Seamlessly toggle modes in the header or via keyboard (<kbd>T</kbd> for Timer, <kbd>S</kbd> for Stopwatch).
+
+### 2. 🔔 Intelligent Notification System & Auto-Update Engine
+- **Desktop & In-App Alerts:** Dispatches native Windows toast alerts and window frame flash when timer finishes or stopwatch reaches its target duration.
+- **Automatic GitHub Update Detection:** Automatically queries the latest releases on startup (or manually via Notification Center) and displays a clean 1-click update pill with release notes and download links.
+- **Notification Center Modal:** Dedicated center (<kbd>N</kbd>) to configure desktop alerts, completion chimes, startup checks, and test notification delivery.
+
+### 3. 🎴 Vintage Split-Flap Mechanical Aesthetics
 - Realistic mechanical card flap physics with 3D drop animation.
 - Subtle tactile card-drop sound with synthesized offline Braun acoustic tone.
 - Unboxed typography with high-contrast digits readable from across the room.
 
-### 2. 🌧️ Authentic Acoustic Noise Masking (Distraction Blocker)
+### 4. 🌧️ Authentic Acoustic Noise Masking (Distraction Blocker)
 - **Natural Rain & Drops:** Genuine recorded rainfall with organic droplet textures, soothing wind, and zero ear fatigue.
 - **Deep Brown Noise:** Heavy low-frequency curtain engineered to drown out conversations, traffic, and background chatter.
 - **Alpha Focus Drone:** 10Hz binaural concentration tone designed to induce and sustain calm cognitive flow.
 - **Smooth Pink Noise:** Balanced 1/f noise spectrum for peaceful reading and long writing sessions.
-- **Instant Control:** 1-click `OFF` button in the header, volume slider, and keyboard shortcut (`C`) to silence or trigger anytime.
+- **Instant Control:** 1-click `OFF` button in the header, volume slider, and keyboard shortcut (<kbd>C</kbd>) to silence or trigger anytime.
 
-### 3. 🎯 Precision Drift-Free Timing
+### 5. 🎯 Precision Drift-Free Timing
 - Synchronized against hardware wall-clock timestamps (`Date.now()`).
 - Immune to background tab throttling, OS power suspensions, or system sleep.
-- Built-in `powerSaveBlocker` prevents Windows from sleeping during active countdowns.
+- Built-in `powerSaveBlocker` prevents Windows from sleeping during active sessions.
 
-### 4. 🖥️ Native Windows Integration
+### 6. 🖥️ Native Windows Integration
 - Frameless dark chrome `#08080A` with customized titlebar window controls (minimize, maximize, close).
-- Fullscreen focus mode (`F` or `F11`) with auto-hiding controls during idle countdowns.
+- Fullscreen focus mode (<kbd>F</kbd> or <kbd>F11</kbd>) with auto-hiding controls during idle countdowns.
 - Always-On-Top window pinning (`Pin` icon) to keep the timer floating above editors and browsers.
 - Native Windows toast notifications upon countdown completion.
 
-### 5. 🛡️ 100% Offline & Private
-- Zero cloud servers, zero telemetry, zero analytics, zero external network requests.
+### 7. 🛡️ 100% Offline & Private
+- Zero cloud servers, zero telemetry, zero analytics, zero external network requests (updates only check official GitHub releases).
 - All audio and visual assets are completely self-contained within the executable.
 
 ---
@@ -70,11 +80,15 @@ You **do not** need any coding knowledge, Node.js, or programming tools to use D
 
 | Shortcut | Action |
 | :--- | :--- |
-| <kbd>Space</kbd> | Start, Pause, or Resume countdown |
-| <kbd>R</kbd> | Reset countdown to preset or custom duration |
+| <kbd>Space</kbd> | Start, Pause, or Resume countdown / stopwatch |
+| <kbd>T</kbd> | Switch to Countdown Timer mode |
+| <kbd>S</kbd> | Switch to Stopwatch count-up mode |
+| <kbd>L</kbd> | Record lap split time (in Stopwatch mode) |
+| <kbd>R</kbd> | Reset countdown or stopwatch |
+| <kbd>N</kbd> | Open Notification Center & Alert settings |
 | <kbd>C</kbd> | Toggle concentration audio & noise masking On / Off |
 | <kbd>F</kbd> / <kbd>F11</kbd> | Toggle immersive fullscreen mode |
-| <kbd>Esc</kbd> | Exit fullscreen or dismiss open dialogs |
+| <kbd>Esc</kbd> | Exit fullscreen or dismiss open dialogs / banners |
 | <kbd>M</kbd> | Toggle completion alarm & mechanical flap sound |
 | <kbd>1</kbd> – <kbd>8</kbd> | Quick preset jump (1, 5, 10, 15, 25, 30, 45, 60 min) |
 | **Click Digit** | Direct inline numerical edit of hours, minutes, or seconds |
