@@ -204,7 +204,7 @@ export default function App() {
     }
   }, [status]);
 
-  // Synchronize running state with Electron powerSaveBlocker and document title
+  // Synchronize document title with active timer / stopwatch time
   useEffect(() => {
     let title = 'Dark Flip Timer';
     if (appMode === 'timer') {
@@ -228,15 +228,22 @@ export default function App() {
     }
 
     document.title = title;
-
-    const isRunning =
-      (appMode === 'timer' && status === 'running') ||
-      (appMode === 'stopwatch' && stopwatchStatus === 'running');
-
-    if (window.electronAPI?.setTimerRunningState) {
-      window.electronAPI.setTimerRunningState(isRunning).catch(() => {});
-    }
   }, [appMode, remainingSeconds, status, stopwatchElapsedSeconds, stopwatchStatus]);
+
+  // Synchronize running state with Electron powerSaveBlocker only when running status changes
+  const isRunning =
+    (appMode === 'timer' && status === 'running') ||
+    (appMode === 'stopwatch' && stopwatchStatus === 'running');
+
+  const lastRunningRef = useRef<boolean | null>(null);
+  useEffect(() => {
+    if (lastRunningRef.current !== isRunning) {
+      lastRunningRef.current = isRunning;
+      if (window.electronAPI?.setTimerRunningState) {
+        window.electronAPI.setTimerRunningState(isRunning).catch(() => {});
+      }
+    }
+  }, [isRunning]);
 
   // Drift-free wall-clock countdown loop
   const syncRemainingFromClock = useCallback(() => {
@@ -298,7 +305,7 @@ export default function App() {
   useEffect(() => {
     if (status !== 'running') return;
 
-    const interval = setInterval(syncRemainingFromClock, 50);
+    const interval = setInterval(syncRemainingFromClock, 100);
     const handleVisibilityOrFocus = () => syncRemainingFromClock();
 
     document.addEventListener('visibilitychange', handleVisibilityOrFocus);
@@ -359,7 +366,7 @@ export default function App() {
   useEffect(() => {
     if (stopwatchStatus !== 'running') return;
 
-    const interval = setInterval(syncStopwatchFromClock, 50);
+    const interval = setInterval(syncStopwatchFromClock, 100);
     const handleVisibilityOrFocus = () => syncStopwatchFromClock();
 
     document.addEventListener('visibilitychange', handleVisibilityOrFocus);
@@ -377,7 +384,7 @@ export default function App() {
     async (isManual: boolean = false) => {
       setIsCheckingUpdate(true);
       try {
-        const info = await checkForAppUpdates('1.1.0', isManual);
+        const info = await checkForAppUpdates('1.1.1', isManual);
         setUpdateInfo(info);
         if (info.hasUpdate) {
           if (isManual) {
@@ -884,22 +891,22 @@ export default function App() {
       onClick={wakeControls}
       className="relative w-screen h-screen bg-[#08080A] text-[#F4F4F6] flex flex-col justify-between overflow-hidden select-none"
     >
-      {/* Top Bar Contract: 3 Zones (Brand Wordmark & Mode Switcher — Preset Controls — Primary Action) */}
+      {/* Top Bar Contract: 3 Zones (Brand Wordmark & Mode Switcher — Preset Controls — Window Actions) */}
       <header
-        className={`app-drag-region flex items-center justify-between gap-6 px-6 py-3.5 border-b border-[#191920] bg-[#0B0B0E] transition-opacity duration-200 z-30 ${chromeVisibilityClass}`}
+        className={`app-drag-region flex items-center justify-between gap-2 sm:gap-4 px-4 sm:px-6 py-2.5 sm:py-3 border-b border-[#191920] bg-[#0B0B0E] transition-opacity duration-200 z-30 select-none ${chromeVisibilityClass}`}
       >
         {/* Zone 1: Single-line Brand Title & Dual Mode Switcher */}
-        <div className="flex items-center gap-4 shrink-0">
-          <div className="flex items-center gap-2.5 shrink-0">
+        <div className="flex items-center gap-2.5 sm:gap-4 shrink-0">
+          <div className="flex items-center gap-2 shrink-0">
             <img
               src="./icon.svg"
               alt="Dark Flip Timer logo"
               referrerPolicy="no-referrer"
-              className="w-6 h-6 rounded-md"
+              className="w-5 h-5 sm:w-6 sm:h-6 rounded-md"
             />
             <span
               style={{ fontFamily: 'var(--font-display)' }}
-              className="text-base font-bold tracking-tight text-zinc-100 whitespace-nowrap shrink-0"
+              className="text-sm sm:text-base font-bold tracking-tight text-zinc-100 whitespace-nowrap shrink-0"
             >
               Dark Flip Timer
             </span>
@@ -912,37 +919,37 @@ export default function App() {
               onClick={() => setAppMode('timer')}
               aria-label="Switch to Countdown Timer mode (T)"
               title="Countdown Timer (T)"
-              className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-md transition-all cursor-pointer ${
+              className={`flex items-center gap-1.5 px-2 sm:px-2.5 py-1 text-xs font-medium rounded-md transition-all cursor-pointer ${
                 isTimerMode
                   ? 'bg-[#252530] text-zinc-100 shadow-xs'
                   : 'text-zinc-400 hover:text-zinc-200'
               }`}
             >
               <Clock className="w-3.5 h-3.5" />
-              <span>Timer</span>
+              <span className="hidden xs:inline sm:inline">Timer</span>
             </button>
             <button
               type="button"
               onClick={() => setAppMode('stopwatch')}
               aria-label="Switch to Stopwatch mode (S)"
               title="Stopwatch Count-up (S)"
-              className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-md transition-all cursor-pointer ${
+              className={`flex items-center gap-1.5 px-2 sm:px-2.5 py-1 text-xs font-medium rounded-md transition-all cursor-pointer ${
                 !isTimerMode
                   ? 'bg-[#252530] text-zinc-100 shadow-xs'
                   : 'text-zinc-400 hover:text-zinc-200'
               }`}
             >
               <Flag className="w-3.5 h-3.5" />
-              <span>Stopwatch</span>
+              <span className="hidden xs:inline sm:inline">Stopwatch</span>
             </button>
           </div>
         </div>
 
-        {/* Zone 2: Contextual Presets / Target Alert Controls */}
+        {/* Zone 2: Contextual Presets (Shown on Wide Screens >= 1280px so they never crowd out window controls) */}
         {isTimerMode ? (
           <nav
             aria-label="Timer quick presets"
-            className="app-no-drag hidden md:flex items-center gap-1 p-1 rounded-lg bg-[#121217] border border-[#22222B]"
+            className="app-no-drag hidden xl:flex items-center gap-1 p-1 rounded-lg bg-[#121217] border border-[#22222B] shrink-0"
           >
             {QUICK_PRESETS.map((preset) => {
               const isSelected =
@@ -954,7 +961,7 @@ export default function App() {
                   type="button"
                   onClick={() => handleSelectPreset(preset.minutes)}
                   aria-label={`Preset ${preset.minutes} minutes`}
-                  className={`px-3 py-1 text-xs font-medium rounded-md transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
+                  className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
                     isSelected
                       ? 'bg-[#252530] text-zinc-100 shadow-xs'
                       : 'text-zinc-400 hover:text-zinc-200 hover:bg-[#191921]'
@@ -968,9 +975,9 @@ export default function App() {
         ) : (
           <nav
             aria-label="Stopwatch target alert duration"
-            className="app-no-drag hidden md:flex items-center gap-1 p-1 rounded-lg bg-[#121217] border border-[#22222B]"
+            className="app-no-drag hidden xl:flex items-center gap-1 p-1 rounded-lg bg-[#121217] border border-[#22222B] shrink-0"
           >
-            <span className="px-2 text-[11px] font-semibold tracking-wider uppercase text-zinc-500">
+            <span className="px-1.5 text-[11px] font-semibold tracking-wider uppercase text-zinc-500">
               Target:
             </span>
             {[
@@ -988,7 +995,7 @@ export default function App() {
                   type="button"
                   onClick={() => handleChangeStopwatchTarget(opt.val)}
                   title={opt.val ? `Alert when stopwatch reaches ${opt.val}m` : 'No target alert'}
-                  className={`px-2.5 py-1 text-xs font-medium rounded-md transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
+                  className={`px-2 py-1 text-xs font-medium rounded-md transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
                     isSelected
                       ? 'bg-[#252530] text-amber-300 font-semibold shadow-xs'
                       : 'text-zinc-400 hover:text-zinc-200 hover:bg-[#191921]'
@@ -1001,8 +1008,8 @@ export default function App() {
           </nav>
         )}
 
-        {/* Zone 3: Actions & Window Controls */}
-        <div className="app-no-drag flex items-center gap-2 shrink-0">
+        {/* Zone 3: Actions & Window Controls (Pinned to top right corner, NEVER overflows) */}
+        <div className="app-no-drag flex items-center gap-1.5 sm:gap-2 shrink-0 ml-auto">
           {/* Software Update Alert Pill */}
           {updateInfo?.hasUpdate && (
             <button
@@ -1010,11 +1017,10 @@ export default function App() {
               onClick={() => setUpdateModalOpen(true)}
               aria-label={`Update ${updateInfo.latestVersion} available`}
               title={`Download Dark Flip Timer ${updateInfo.latestVersion}`}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-amber-500/40 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 text-xs font-semibold transition-all cursor-pointer shadow-xs animate-pulse"
+              className="flex items-center gap-1.5 px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-lg border border-amber-500/40 bg-amber-500/10 text-amber-300 hover:bg-amber-500/20 text-xs font-semibold transition-all cursor-pointer shadow-xs animate-pulse"
             >
               <Sparkles className="w-3.5 h-3.5 text-amber-400" />
               <span className="hidden sm:inline">Update {updateInfo.latestVersion}</span>
-              <span className="sm:hidden">Update</span>
             </button>
           )}
 
@@ -1024,22 +1030,22 @@ export default function App() {
             onClick={() => setNotificationCenterOpen(true)}
             aria-label="Notification center and alerts"
             title="Notification Center & Alerts (N)"
-            className="relative p-2 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-[#17171E] transition-colors cursor-pointer"
+            className="relative p-1.5 sm:p-2 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-[#17171E] transition-colors cursor-pointer"
           >
             <Bell className="w-4 h-4" />
             {(osNotificationsEnabled || updateInfo?.hasUpdate) && (
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-amber-400 ring-2 ring-[#0B0B0E]" />
+              <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-400 ring-2 ring-[#0B0B0E]" />
             )}
           </button>
 
           {/* Concentration Music & Sound Masking Trigger */}
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1">
             <button
               type="button"
               onClick={() => setFocusMusicModalOpen(true)}
               aria-label="Concentration music & noise masking options"
               title="Concentration Music & Sound Masking (C)"
-              className={`flex items-center gap-2 px-2.5 py-1.5 rounded-lg border text-xs font-medium transition-all cursor-pointer ${
+              className={`flex items-center gap-1.5 px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-lg border text-xs font-medium transition-all cursor-pointer ${
                 isFocusMusicPlaying
                   ? 'bg-amber-500/15 border-amber-500/50 text-amber-300 ring-1 ring-amber-500/40 shadow-xs'
                   : 'bg-[#14141B] border-[#252532] text-zinc-400 hover:text-zinc-200 hover:bg-[#1A1A24]'
@@ -1050,7 +1056,7 @@ export default function App() {
                   isFocusMusicPlaying ? 'text-amber-400 animate-pulse' : 'text-zinc-400'
                 }`}
               />
-              <span className="hidden sm:inline">
+              <span className="hidden 2xl:inline">
                 {isFocusMusicPlaying
                   ? `${
                       FOCUS_SOUND_OPTIONS.find((s) => s.id === selectedFocusSound)?.name ||
@@ -1059,9 +1065,9 @@ export default function App() {
                   : 'Focus Sound'}
               </span>
               {isFocusMusicPlaying && (
-                <span className="flex h-2 w-2 relative">
+                <span className="flex h-1.5 w-1.5 sm:h-2 sm:w-2 relative">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                  <span className="relative inline-flex rounded-full h-1.5 w-1.5 sm:h-2 sm:w-2 bg-emerald-500" />
                 </span>
               )}
             </button>
@@ -1073,10 +1079,10 @@ export default function App() {
                 onClick={handleStopFocusMusic}
                 aria-label="Stop concentration audio"
                 title="Stop Background Sound (OFF)"
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-bold bg-red-600/90 hover:bg-red-600 text-white transition-colors cursor-pointer shadow-xs shrink-0"
+                className="flex items-center gap-1 px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-lg text-xs font-bold bg-red-600/90 hover:bg-red-600 text-white transition-colors cursor-pointer shadow-xs shrink-0"
               >
                 <Power className="w-3 h-3" />
-                <span>OFF</span>
+                <span className="hidden xs:inline">OFF</span>
               </button>
             )}
           </div>
@@ -1086,7 +1092,7 @@ export default function App() {
             onClick={() => setSoundEnabled((prev) => !prev)}
             aria-label={soundEnabled ? 'Mute alarm sound' : 'Unmute alarm sound'}
             title={soundEnabled ? 'Alarm sound enabled (M)' : 'Alarm sound muted (M)'}
-            className="p-2 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-[#17171E] transition-colors cursor-pointer"
+            className="p-1.5 sm:p-2 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-[#17171E] transition-colors cursor-pointer"
           >
             {soundEnabled ? (
               <Volume2 className="w-4 h-4 text-zinc-200" />
@@ -1100,7 +1106,7 @@ export default function App() {
             onClick={handleToggleAlwaysOnTop}
             aria-label={isAlwaysOnTop ? 'Disable pin on top' : 'Pin window on top'}
             title="Pin window always on top"
-            className={`p-2 rounded-lg transition-colors cursor-pointer ${
+            className={`p-1.5 sm:p-2 rounded-lg transition-colors cursor-pointer ${
               isAlwaysOnTop
                 ? 'text-amber-400 bg-[#1B1B24]'
                 : 'text-zinc-400 hover:text-zinc-100 hover:bg-[#17171E]'
@@ -1114,38 +1120,35 @@ export default function App() {
             onClick={() => setInfoModalOpen(true)}
             aria-label="Keyboard shortcuts and Windows desktop build info"
             title="Shortcuts & Windows Build Info"
-            className="p-2 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-[#17171E] transition-colors cursor-pointer"
+            className="p-1.5 sm:p-2 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-[#17171E] transition-colors cursor-pointer"
           >
             <Keyboard className="w-4 h-4" />
           </button>
 
+          {/* Fullscreen icon button */}
           <button
             type="button"
             onClick={handleToggleFullscreen}
             aria-label={isFullscreen ? 'Exit fullscreen mode' : 'Enter fullscreen mode'}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 text-xs font-medium text-zinc-100 bg-[#1B1B24] hover:bg-[#262632] border border-[#2E2E3C] rounded-lg transition-colors cursor-pointer whitespace-nowrap shrink-0"
+            title={isFullscreen ? 'Exit Fullscreen (Esc / F11)' : 'Fullscreen (F11)'}
+            className="p-1.5 sm:p-2 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-[#17171E] transition-colors cursor-pointer"
           >
             {isFullscreen ? (
-              <>
-                <Minimize2 className="w-3.5 h-3.5 text-amber-400" />
-                <span>Exit Fullscreen</span>
-              </>
+              <Minimize2 className="w-4 h-4 text-amber-400" />
             ) : (
-              <>
-                <Maximize2 className="w-3.5 h-3.5 text-amber-400" />
-                <span>Fullscreen</span>
-              </>
+              <Maximize2 className="w-4 h-4 text-zinc-300" />
             )}
           </button>
 
-          {/* Native Windows Window Controls when running inside frameless Electron */}
+          {/* Native Windows Window Controls: ALWAYS VISIBLE, ALWAYS ANCHORED */}
           {isElectron && (
-            <div className="flex items-center ml-2 pl-2 border-l border-[#22222B]">
+            <div className="flex items-center ml-1 sm:ml-2 pl-1 sm:pl-2 border-l border-[#22222B] shrink-0">
               <button
                 type="button"
                 onClick={() => window.electronAPI?.minimizeWindow()}
                 aria-label="Minimize window"
-                className="p-2 text-zinc-400 hover:text-zinc-100 hover:bg-[#1B1B22]"
+                title="Minimize"
+                className="p-1.5 sm:p-2 rounded text-zinc-400 hover:text-zinc-100 hover:bg-[#1B1B22] transition-colors cursor-pointer"
               >
                 <Minus className="w-3.5 h-3.5" />
               </button>
@@ -1153,7 +1156,8 @@ export default function App() {
                 type="button"
                 onClick={() => window.electronAPI?.maximizeOrRestoreWindow()}
                 aria-label="Maximize window"
-                className="p-2 text-zinc-400 hover:text-zinc-100 hover:bg-[#1B1B22]"
+                title="Maximize / Restore"
+                className="p-1.5 sm:p-2 rounded text-zinc-400 hover:text-zinc-100 hover:bg-[#1B1B22] transition-colors cursor-pointer"
               >
                 <Square className="w-3 h-3" />
               </button>
@@ -1161,7 +1165,8 @@ export default function App() {
                 type="button"
                 onClick={() => window.electronAPI?.closeWindow()}
                 aria-label="Close application"
-                className="p-2 text-zinc-400 hover:text-white hover:bg-red-600/90"
+                title="Close"
+                className="p-1.5 sm:p-2 rounded text-zinc-400 hover:text-white hover:bg-red-600 transition-colors cursor-pointer"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
@@ -1219,9 +1224,9 @@ export default function App() {
           </div>
         )}
 
-        {/* Compact Preset Bar for smaller viewports */}
+        {/* Compact Preset Bar for smaller viewports (< 1280px) */}
         <div
-          className={`flex md:hidden items-center justify-center flex-wrap gap-1 mb-5 transition-opacity duration-200 ${chromeVisibilityClass}`}
+          className={`flex xl:hidden items-center justify-center flex-wrap gap-1 mb-5 transition-opacity duration-200 ${chromeVisibilityClass}`}
         >
           {isTimerMode
             ? QUICK_PRESETS.map((preset) => (

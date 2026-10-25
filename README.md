@@ -8,7 +8,7 @@
 ### Standalone Dark-Themed Split-Flap Countdown Timer & Acoustic Focus Desktop Application
 **Crafted with precision by TanCreative**
 
-[![Release](https://img.shields.io/badge/Release-v1.1.0-amber.svg?style=flat-square)](https://github.com/contacttancrea-cmyk/Dark-flip-timer/releases)
+[![Release](https://img.shields.io/badge/Release-v1.1.1-amber.svg?style=flat-square)](https://github.com/contacttancrea-cmyk/Dark-flip-timer/releases)
 [![Platform](https://img.shields.io/badge/Platform-Windows%20x64-blue.svg?style=flat-square)](https://github.com/contacttancrea-cmyk/Dark-flip-timer/releases)
 [![License](https://img.shields.io/badge/License-MIT-emerald.svg?style=flat-square)](./LICENSE)
 [![Built by](https://img.shields.io/badge/Author-TanCreative-purple.svg?style=flat-square)](https://github.com/contacttancrea-cmyk)
@@ -30,8 +30,8 @@ You **do not** need any coding knowledge, Node.js, or programming tools to use D
 
 | Download Type | Binary File | Description |
 | :--- | :--- | :--- |
-| **Zero-Install (Portable)** | [**Dark-Flip-Timer-1.1.0-Portable.exe**](https://github.com/contacttancrea-cmyk/Dark-flip-timer/releases/latest) | Standalone executable. Download, double-click, and start immediately without installing anything. Perfect for flash drives or quick use. |
-| **Windows Setup Installer** | [**Dark-Flip-Timer-1.1.0-nsis.exe**](https://github.com/contacttancrea-cmyk/Dark-flip-timer/releases/latest) | Standard Windows setup installer. Adds **Dark Flip Timer** to your Desktop and Windows Start Menu. |
+| **Zero-Install (Portable)** | [**Dark-Flip-Timer-1.1.1-Portable.exe**](https://github.com/contacttancrea-cmyk/Dark-flip-timer/releases/latest) | Standalone executable. Download, double-click, and start immediately without installing anything. Perfect for flash drives or quick use. |
+| **Windows Setup Installer** | [**Dark-Flip-Timer-1.1.1-nsis.exe**](https://github.com/contacttancrea-cmyk/Dark-flip-timer/releases/latest) | Standard Windows setup installer. Adds **Dark Flip Timer** to your Desktop and Windows Start Menu. |
 
 ---
 

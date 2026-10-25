@@ -1,6 +1,11 @@
 const { app, BrowserWindow, ipcMain, Notification, powerSaveBlocker, shell } = require('electron');
 const path = require('node:path');
 
+// Enable GPU hardware rasterization for high-performance 60fps/120fps CSS 3D transforms
+app.commandLine.appendSwitch('enable-gpu-rasterization');
+app.commandLine.appendSwitch('enable-zero-copy');
+app.commandLine.appendSwitch('ignore-gpu-blocklist');
+
 let mainWindow = null;
 let powerSaveId = null;
 
@@ -10,13 +15,12 @@ function createMainWindow() {
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 760,
-    minWidth: 760,
-    minHeight: 500,
+    minWidth: 640,
+    minHeight: 460,
     title: 'Dark Flip Timer',
     backgroundColor: '#08080A',
     icon: iconPath,
     frame: false,
-    titleBarStyle: 'hidden',
     autoHideMenuBar: true,
     show: false,
     webPreferences: {

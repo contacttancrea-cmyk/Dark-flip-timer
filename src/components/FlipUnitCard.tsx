@@ -14,12 +14,6 @@ interface FlipUnitCardProps {
   onCommitUnitInput: (unit: TimeUnitKey, rawValue: string) => void;
 }
 
-interface FlipRenderState {
-  current: string;
-  previous: string;
-  flipKey: number;
-  isFlipping: boolean;
-}
 
 export const FlipUnitCard: React.FC<FlipUnitCardProps> = ({
   unit,
@@ -33,35 +27,24 @@ export const FlipUnitCard: React.FC<FlipUnitCardProps> = ({
   onCommitUnitInput,
 }) => {
   const formattedValue = formatTwoDigits(value);
-
-  // Synchronous state update during render guarantees zero 1-frame flash
-  const [flipState, setFlipState] = useState<FlipRenderState>({
-    current: formattedValue,
-    previous: formattedValue,
-    flipKey: 0,
-    isFlipping: false,
-  });
-
-  if (formattedValue !== flipState.current) {
-    setFlipState({
-      current: formattedValue,
-      previous: flipState.current,
-      flipKey: flipState.flipKey + 1,
-      isFlipping: true,
-    });
-  }
+  const [displayValue, setDisplayValue] = useState<string>(formattedValue);
+  const [previousValue, setPreviousValue] = useState<string>(formattedValue);
+  const [flipKey, setFlipKey] = useState<number>(0);
+  const [isFlipping, setIsFlipping] = useState<boolean>(false);
 
   useEffect(() => {
-    if (!flipState.isFlipping) return;
-    const timer = setTimeout(() => {
-      setFlipState((prev) => ({
-        ...prev,
-        previous: prev.current,
-        isFlipping: false,
-      }));
-    }, 685);
-    return () => clearTimeout(timer);
-  }, [flipState.flipKey, flipState.isFlipping]);
+    if (formattedValue !== displayValue) {
+      setPreviousValue(displayValue);
+      setDisplayValue(formattedValue);
+      setFlipKey((prev) => prev + 1);
+      setIsFlipping(true);
+
+      const timer = setTimeout(() => {
+        setIsFlipping(false);
+      }, 420);
+      return () => clearTimeout(timer);
+    }
+  }, [formattedValue, displayValue]);
 
   const [isEditingDirect, setIsEditingDirect] = useState<boolean>(false);
   const [draftInput, setDraftInput] = useState<string>(formattedValue);
@@ -148,7 +131,8 @@ export const FlipUnitCard: React.FC<FlipUnitCardProps> = ({
       ? 'opacity-0 pointer-events-none'
       : 'opacity-100';
 
-  const { current, previous, isFlipping, flipKey } = flipState;
+  const current = displayValue;
+  const previous = previousValue;
 
   return (
     <div
@@ -189,7 +173,7 @@ export const FlipUnitCard: React.FC<FlipUnitCardProps> = ({
       </div>
 
       {/* True Split-Flap Mechanical Card Stack (No outer digital monitor frame) */}
-      <div className={`relative ${cardSizeClasses}`}>
+      <div className={`relative ${cardSizeClasses} flip-card-perspective`}>
         {/* Top Deck Plate Stack Effect (Simulates reserve flaps waiting in upper drum) */}
         <div
           aria-hidden="true"
@@ -282,7 +266,7 @@ export const FlipUnitCard: React.FC<FlipUnitCardProps> = ({
             {isFlipping && (
               <div
                 key={`flap-top-${flipKey}`}
-                className="w-full h-[calc(50%-2.5px)] absolute top-0 left-0 overflow-hidden rounded-t-2xl bg-gradient-to-b from-[#262630] to-[#1A1A22] border-t-[2.5px] border-x border-t-zinc-300/65 border-x-[#3E3E4E] shadow-[0_18px_32px_rgba(0,0,0,0.95)] animate-flap-top z-20"
+                className="w-full h-[calc(50%-2.5px)] absolute top-0 left-0 overflow-hidden rounded-t-2xl bg-gradient-to-b from-[#262630] to-[#1A1A22] border-t-[2.5px] border-x border-t-zinc-300/65 border-x-[#3E3E4E] animate-flap-top z-20"
               >
                 {renderHalfContent(previous, 'top')}
                 <div className="absolute inset-0 bg-black animate-top-flap-shade pointer-events-none" />
@@ -293,7 +277,7 @@ export const FlipUnitCard: React.FC<FlipUnitCardProps> = ({
             {isFlipping && (
               <div
                 key={`flap-bot-${flipKey}`}
-                className="w-full h-[calc(50%-2.5px)] absolute bottom-0 left-0 overflow-hidden rounded-b-2xl bg-gradient-to-b from-[#16161D] to-[#22222C] border-b-[2.5px] border-x border-b-zinc-200/75 border-x-[#383848] shadow-[0_22px_36px_rgba(0,0,0,0.95)] animate-flap-bottom z-20"
+                className="w-full h-[calc(50%-2.5px)] absolute bottom-0 left-0 overflow-hidden rounded-b-2xl bg-gradient-to-b from-[#16161D] to-[#22222C] border-b-[2.5px] border-x border-b-zinc-200/75 border-x-[#383848] animate-flap-bottom z-20"
               >
                 {renderHalfContent(current, 'bottom')}
                 <div className="absolute inset-0 bg-white animate-bottom-flap-highlight pointer-events-none" />
