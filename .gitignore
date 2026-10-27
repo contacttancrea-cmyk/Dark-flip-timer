@@ -7,5 +7,25 @@ coverage/
 *.log
 *.mp4
 *.webm
+*.ecproj
+*.fcproj
+*.scraft
+preview_*.png
+still_*.png
+craft_*.png
+speed_*.png
+fx_*.png
+test_*.png
+audio_assets/
+craft_assets/
+ref_analysis/
+"FilmCraft Previews/"
+remotion/
+remotion.config.ts
+launch-video/
+public/soundtrack.wav
+public/banner.png
+scripts/build_launch_project.jsx
+scripts/render_launch_video.py
 .env*
 !.env.example

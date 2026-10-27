@@ -30,7 +30,7 @@ export const UpdateNotificationModal: React.FC<UpdateNotificationModalProps> = (
   if (!isOpen) return null;
 
   const hasUpdate = Boolean(updateInfo?.hasUpdate);
-  const currentVer = updateInfo?.currentVersion || '1.1.1';
+  const currentVer = updateInfo?.currentVersion || '1.1.2';
   const latestVer = updateInfo?.latestVersion || `v${currentVer}`;
 
   const handleDownloadPortable = () => {

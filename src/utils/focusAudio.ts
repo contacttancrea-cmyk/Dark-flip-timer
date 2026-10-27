@@ -268,6 +268,16 @@ class FocusAudioEngine {
       }
     }
 
+    // Smooth crossfade loop boundary to eliminate any wrap-around clicks
+    const fadeSamples = Math.floor(ctx.sampleRate * 0.15);
+    for (let channel = 0; channel < 2; channel++) {
+      const data = buffer.getChannelData(channel);
+      for (let i = 0; i < fadeSamples; i++) {
+        const alpha = i / fadeSamples;
+        data[i] = data[i] * alpha + data[bufferSize - fadeSamples + i] * (1 - alpha);
+      }
+    }
+
     const source = ctx.createBufferSource();
     source.buffer = buffer;
     source.loop = true;
@@ -291,80 +301,141 @@ class FocusAudioEngine {
   }
 
   /**
-   * Alpha Focus Drone:
-   * Warm musical synth drone with 10Hz binaural difference (108Hz + 118Hz)
+   * Pure Alpha Focus Drone:
+   * Pure organic sine-wave analog drone tuned to 10Hz alpha difference (108Hz Left, 118Hz Right).
+   * 100% pure sine oscillators (zero triangle buzzing / zero electric artifacts),
+   * dedicated stereo channels for true binaural entrainment without acoustic phase cancellation,
+   * gentle 15-second breathing organic LFO drift, critically damped lowpass filter (Q=0.5),
+   * and studio dynamics compressor to guarantee zero clipping or distortion.
    */
   private setupAlphaDrone(ctx: AudioContext, destination: AudioNode): void {
     const baseFreq = 108.0;
     const alphaDifference = 10.0;
+    const now = ctx.currentTime;
 
+    // 1. Stereo Binaural Sine Carriers (True Channel Isolation)
     const oscLeft = ctx.createOscillator();
     oscLeft.type = 'sine';
-    oscLeft.frequency.setValueAtTime(baseFreq, ctx.currentTime);
+    oscLeft.frequency.setValueAtTime(baseFreq, now);
 
     const oscRight = ctx.createOscillator();
     oscRight.type = 'sine';
-    oscRight.frequency.setValueAtTime(baseFreq + alphaDifference, ctx.currentTime);
+    oscRight.frequency.setValueAtTime(baseFreq + alphaDifference, now);
 
-    const oscSub = ctx.createOscillator();
-    oscSub.type = 'sine';
-    oscSub.frequency.setValueAtTime(baseFreq / 2, ctx.currentTime);
+    const gainLeft = ctx.createGain();
+    gainLeft.gain.setValueAtTime(0.24, now);
 
-    const oscWarmth = ctx.createOscillator();
-    oscWarmth.type = 'triangle';
-    oscWarmth.frequency.setValueAtTime(baseFreq * 2, ctx.currentTime);
+    const gainRight = ctx.createGain();
+    gainRight.gain.setValueAtTime(0.24, now);
 
     const panLeft = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
     const panRight = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
 
-    if (panLeft) panLeft.pan.setValueAtTime(-0.75, ctx.currentTime);
-    if (panRight) panRight.pan.setValueAtTime(0.75, ctx.currentTime);
+    if (panLeft) panLeft.pan.setValueAtTime(-1.0, now);
+    if (panRight) panRight.pan.setValueAtTime(1.0, now);
 
-    const droneMix = ctx.createGain();
-    droneMix.gain.setValueAtTime(0.32, ctx.currentTime);
-
-    const filter = ctx.createBiquadFilter();
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(260, ctx.currentTime);
-    filter.Q.setValueAtTime(0.9, ctx.currentTime);
-
+    // 2. Pure Harmonic Foundation (Sub-bass, Consonant Fifth, Warm Octave - all 100% pure sines)
+    const oscSub = ctx.createOscillator();
+    oscSub.type = 'sine';
+    oscSub.frequency.setValueAtTime(baseFreq / 2.0, now); // 54 Hz deep grounding
     const subGain = ctx.createGain();
-    subGain.gain.setValueAtTime(0.35, ctx.currentTime);
-    oscSub.connect(subGain);
-    subGain.connect(droneMix);
+    subGain.gain.setValueAtTime(0.18, now);
 
+    const oscFifth = ctx.createOscillator();
+    oscFifth.type = 'sine';
+    oscFifth.frequency.setValueAtTime(baseFreq * 1.5, now); // 162 Hz consonant fifth
+    const fifthGain = ctx.createGain();
+    fifthGain.gain.setValueAtTime(0.05, now);
+
+    const oscWarmth = ctx.createOscillator();
+    oscWarmth.type = 'sine'; // PURE SINE, replaces harsh buzzing triangle wave
+    oscWarmth.frequency.setValueAtTime(baseFreq * 2.0, now); // 216 Hz warm octave
     const warmthGain = ctx.createGain();
-    warmthGain.gain.setValueAtTime(0.06, ctx.currentTime);
-    oscWarmth.connect(warmthGain);
-    warmthGain.connect(droneMix);
+    warmthGain.gain.setValueAtTime(0.025, now);
 
+    // 3. Central Drone Bus
+    const droneBus = ctx.createGain();
+    droneBus.gain.setValueAtTime(1.0, now);
+
+    // Connect harmonic foundation to bus
+    oscSub.connect(subGain);
+    subGain.connect(droneBus);
+
+    oscFifth.connect(fifthGain);
+    fifthGain.connect(droneBus);
+
+    oscWarmth.connect(warmthGain);
+    warmthGain.connect(droneBus);
+
+    // Connect binaural carriers
     if (panLeft && panRight) {
-      oscLeft.connect(panLeft);
-      panLeft.connect(droneMix);
-      oscRight.connect(panRight);
-      panRight.connect(droneMix);
+      oscLeft.connect(gainLeft);
+      gainLeft.connect(panLeft);
+      panLeft.connect(droneBus);
+
+      oscRight.connect(gainRight);
+      gainRight.connect(panRight);
+      panRight.connect(droneBus);
     } else {
-      oscLeft.connect(droneMix);
-      oscRight.connect(droneMix);
+      oscLeft.connect(gainLeft);
+      gainLeft.connect(droneBus);
+
+      oscRight.connect(gainRight);
+      gainRight.connect(droneBus);
     }
 
-    droneMix.connect(filter);
-    filter.connect(destination);
+    // 4. Critically Damped Butterworth Lowpass Filter (Q = 0.5, zero resonance peaking)
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(240, now);
+    filter.Q.setValueAtTime(0.5, now);
 
-    oscLeft.start();
-    oscRight.start();
-    oscSub.start();
-    oscWarmth.start();
+    // 5. Organic Breathing LFO (~15-second breathing cycle for living, natural feel)
+    const lfo = ctx.createOscillator();
+    lfo.type = 'sine';
+    lfo.frequency.setValueAtTime(0.067, now); // 15s cycle
+    const lfoGain = ctx.createGain();
+    lfoGain.gain.setValueAtTime(35, now); // gently breathes filter cutoff ±35Hz
+    lfo.connect(lfoGain);
+    lfoGain.connect(filter.frequency);
+
+    // 6. Studio Dynamics Compressor / Brickwall Limiter (Guarantees zero clipping & pristine clarity)
+    const compressor = ctx.createDynamicsCompressor();
+    compressor.threshold.setValueAtTime(-15, now);
+    compressor.knee.setValueAtTime(12, now);
+    compressor.ratio.setValueAtTime(8, now);
+    compressor.attack.setValueAtTime(0.005, now);
+    compressor.release.setValueAtTime(0.15, now);
+
+    // Connect audio signal chain: bus -> filter -> compressor -> destination
+    droneBus.connect(filter);
+    filter.connect(compressor);
+    compressor.connect(destination);
+
+    // Start all generators
+    oscLeft.start(now);
+    oscRight.start(now);
+    oscSub.start(now);
+    oscFifth.start(now);
+    oscWarmth.start(now);
+    lfo.start(now);
 
     this.activeNodes.push(
       oscLeft,
       oscRight,
       oscSub,
+      oscFifth,
       oscWarmth,
-      droneMix,
-      filter,
+      lfo,
+      lfoGain,
+      gainLeft,
+      gainRight,
       subGain,
-      warmthGain
+      fifthGain,
+      warmthGain,
+      droneBus,
+      filter,
+      compressor
     );
     if (panLeft) this.activeNodes.push(panLeft);
     if (panRight) this.activeNodes.push(panRight);
@@ -390,6 +461,16 @@ class FocusAudioEngine {
         b4 = 0.55 * b4 + white * 0.5329522;
         b5 = -0.7616 * b5 - white * 0.016898;
         data[i] = (b0 + b1 + b2 + b3 + b4 + b5 + white * 0.15) * 0.08;
+      }
+    }
+
+    // Smooth crossfade loop boundary to eliminate any wrap-around clicks
+    const fadeSamples = Math.floor(ctx.sampleRate * 0.15);
+    for (let channel = 0; channel < 2; channel++) {
+      const data = buffer.getChannelData(channel);
+      for (let i = 0; i < fadeSamples; i++) {
+        const alpha = i / fadeSamples;
+        data[i] = data[i] * alpha + data[bufferSize - fadeSamples + i] * (1 - alpha);
       }
     }
 

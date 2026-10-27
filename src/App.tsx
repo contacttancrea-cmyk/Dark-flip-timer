@@ -384,7 +384,7 @@ export default function App() {
     async (isManual: boolean = false) => {
       setIsCheckingUpdate(true);
       try {
-        const info = await checkForAppUpdates('1.1.1', isManual);
+        const info = await checkForAppUpdates('1.1.2', isManual);
         setUpdateInfo(info);
         if (info.hasUpdate) {
           if (isManual) {

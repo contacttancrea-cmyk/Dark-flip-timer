@@ -35,8 +35,9 @@ class SoundEngine {
       osc.frequency.setValueAtTime(150, now);
       osc.frequency.exponentialRampToValueAtTime(42, now + 0.028);
 
-      gain.gain.setValueAtTime(0.06, now);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.028);
+      gain.gain.setValueAtTime(0.0001, now);
+      gain.gain.linearRampToValueAtTime(0.06, now + 0.003);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.028);
 
       osc.connect(gain);
       gain.connect(ctx.destination);
